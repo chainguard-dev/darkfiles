@@ -55,6 +55,9 @@ var ignoreDirectories = []string{
 	"/var/lib/systemd/deb-systemd-helper-enabled",
 	"/var/lib/systemd/deb-systemd-user-helper-enabled",
 	"/" + dpkgLib, // apt  system data
+
+	"/usr/share/man/", // man pages
+	"/usr/share/doc/", // documentation
 }
 
 func FilterPaths(fileList []string) (newFileList []string) {
