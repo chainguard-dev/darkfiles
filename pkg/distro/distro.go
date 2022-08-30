@@ -76,11 +76,16 @@ LOOP:
 	// Build the pavckaged files list
 	f.Seek(0, 0)
 	scanner := bufio.NewScanner(f)
+	dupecheck := map[string]struct{}{}
 	for scanner.Scan() {
 		if _, ok := others[scanner.Text()]; ok {
 			continue
 		}
+		if _, ok := dupecheck[scanner.Text()]; ok {
+			continue
+		}
 		filesInPackages = append(filesInPackages, scanner.Text())
+		dupecheck[scanner.Text()] = struct{}{}
 	}
 	return filesInPackages, filesInImage, nil
 }
