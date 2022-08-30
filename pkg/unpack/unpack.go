@@ -9,6 +9,10 @@ import (
 	"chainguard.dev/fagin/pkg/oci"
 )
 
+func New() *Unpack {
+	return &Unpack{}
+}
+
 type Unpack struct {
 }
 
@@ -52,6 +56,6 @@ func (u *Unpack) PrintStats(imageRef string) error {
 	fmt.Printf("Total files in image:       %d\n", stats.FilesInImage)
 	fmt.Printf("Files in packages:          %d\n", stats.FilesInPackages)
 	fmt.Printf("Files not in packages:      %d\n", stats.FilesNotInPackages)
-	fmt.Printf("Tracked by package manager: %d%%\n", stats.FilesNotInPackages)
+	fmt.Printf("Tracked by package manager: %f%%\n", stats.PercentTracked)
 	return nil
 }

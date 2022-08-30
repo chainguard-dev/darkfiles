@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
-
-	"chainguard.dev/fagin/pkg/unpack"
+	"chainguard.dev/fagin/internal/cmd"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	u := unpack.Unpack{}
-	u.PrintStats(os.Args[1])
+	if err := cmd.Execute(); err != nil {
+		logrus.Fatal(err)
+	}
 }
