@@ -11,9 +11,9 @@ type listOptions struct {
 	set string
 }
 
-func addList(parentCmd *cobra.Command) {
-	opts := listOptions{}
+var listOpts = listOptions{}
 
+func addList(parentCmd *cobra.Command) {
 	listCmd := &cobra.Command{
 		Short: "Lists sets of files in a container image",
 		Long: `list [options] imageref
@@ -36,14 +36,14 @@ By default list will output all non-tracked files.
 				return errors.New("no image reference specified")
 			}
 			u := unpack.New()
-			if err := u.List(args[0], opts.set); err != nil {
+			if err := u.List(args[0], listOpts.set); err != nil {
 				return err
 			}
 			return nil
 		},
 	}
 	listCmd.PersistentFlags().StringVar(
-		&opts.set,
+		&listOpts.set,
 		"set",
 		"untracked",
 		"set of files to output (all | tracked | untracked)",

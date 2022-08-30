@@ -13,7 +13,6 @@ type statsOptions struct {
 
 func addStats(parentCmd *cobra.Command) {
 	opts := statsOptions{}
-
 	statsCmd := &cobra.Command{
 		Short: "Output some stats about files in an image",
 		Long: `stats imageref

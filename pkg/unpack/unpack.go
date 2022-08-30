@@ -83,7 +83,7 @@ func (u *Unpack) List(imageRef, set string) error {
 			fmt.Println(p)
 		}
 	case "tracked":
-		for _, p := range filesInImage {
+		for _, p := range filesInPackages {
 			fmt.Println(p)
 		}
 	case "untracked":
