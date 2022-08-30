@@ -28,6 +28,7 @@ func Execute() error {
 	)
 
 	addStats(rootCmd)
+	addList(rootCmd)
 	return rootCmd.Execute()
 }
 

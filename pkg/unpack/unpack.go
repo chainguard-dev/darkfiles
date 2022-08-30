@@ -1,6 +1,7 @@
 package unpack
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -57,5 +58,47 @@ func (u *Unpack) PrintStats(imageRef string) error {
 	fmt.Printf("Files in packages:          %d\n", stats.FilesInPackages)
 	fmt.Printf("Files not in packages:      %d\n", stats.FilesNotInPackages)
 	fmt.Printf("Tracked by package manager: %f%%\n", stats.PercentTracked)
+	return nil
+}
+
+func (u *Unpack) List(imageRef, set string) error {
+	tmpFile, err := oci.FlattenImageToTmp(imageRef)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.Remove(tmpFile)
+
+	filesInPackages, filesInImage, err := distro.ScanImageArchive(tmpFile)
+	if err != nil {
+		return fmt.Errorf("scanning image: %w", err)
+	}
+
+	// TODO: Make filtering optional?
+	filesInPackages = distro.FilterPaths(filesInPackages)
+	filesInImage = distro.FilterPaths(filesInImage)
+
+	switch set {
+	case "all":
+		for _, p := range filesInImage {
+			fmt.Println(p)
+		}
+	case "tracked":
+		for _, p := range filesInImage {
+			fmt.Println(p)
+		}
+	case "untracked":
+		reverseDict := map[string]struct{}{}
+		for _, p := range filesInPackages {
+			reverseDict[p] = struct{}{}
+		}
+
+		for _, p := range filesInImage {
+			if _, ok := reverseDict[p]; !ok {
+				fmt.Println(p)
+			}
+		}
+	default:
+		return errors.New("nnknown set of files")
+	}
 	return nil
 }
