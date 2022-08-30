@@ -39,6 +39,8 @@ func ScanDebian(archivePath string) (filesInPackages, filesInImage []string, err
 	defer f.Close()
 	defer os.Remove(f.Name())
 
+	others := map[string]struct{}{}
+
 LOOP:
 	for {
 		header, err := tr.Next()
@@ -66,6 +68,8 @@ LOOP:
 					return nil, nil, fmt.Errorf("writing to files list: %w", err)
 				}
 			}
+		default:
+			others["/"+header.Name] = struct{}{}
 		}
 	}
 
@@ -73,6 +77,9 @@ LOOP:
 	f.Seek(0, 0)
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
+		if _, ok := others[scanner.Text()]; ok {
+			continue
+		}
 		filesInPackages = append(filesInPackages, scanner.Text())
 	}
 	return filesInPackages, filesInImage, nil
