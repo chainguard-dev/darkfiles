@@ -1,5 +1,7 @@
 # fagin
 
+<img src=https://i.dailymail.co.uk/i/pix/scaled/2011/12/03/article-0-034532240000044D-201_308x185.jpg>
+
 When you need to learn how to pick a pocket or two, call Fagin.
 
 Fagin (named after [the Oliver Twist Villain](https://en.wikipedia.org/wiki/Fagin)) is a tool finds orphaned files in container images and makes them do bad deeds, 
