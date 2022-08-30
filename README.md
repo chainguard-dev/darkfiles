@@ -16,41 +16,19 @@ Just run `fagin imageref` to get a list of files not installed via the os packag
 manager:
 
 ```
-fagin golang
+go run ./main.go golang
+INFO[0000] flattening image index.docker.io/library/golang 
+INFO[0021] flattenned image to /tmp/image-dump-2645404725.tar (962 MB) 
 
-/usr/local/go/CONTRIBUTING.md
-/usr/local/go/LICENSE
-/usr/local/go/PATENTS
-/usr/local/go/README.md
-/usr/local/go/SECURITY.md
-/usr/local/go/VERSION
-/usr/local/go/api/README
-/usr/local/go/api/except.txt
-/usr/local/go/api/go1.1.txt
-/usr/local/go/api/go1.10.txt
-/usr/local/go/api/go1.11.txt
-...
-(and 12'000+ files)
+Total files in image:       24906
+Files in packages:          12881
+Files not in packages:      12025
+Tracked by package manager: 51.718460%
+
 ```
 
 ## TODO
 
-### Finish Image Flattening Code
+### apk support
 
-For now, fagin can only run on flattened image archives only, to get some samples:
-
-```bash
-wget https://storage.googleapis.com/puerco-chainguard-public/flat-image-samples/debian.tar.gz
-wget https://storage.googleapis.com/puerco-chainguard-public/flat-image-samples/golang.tar.gz
-wget https://storage.googleapis.com/puerco-chainguard-public/flat-image-samples/wordpress.tar.gz
-```
-
-Then run fagin with the archive as first arg
-
-```
-fagin wordpress.tar.gz
-```
-
-
-
-
+Right now, fagin is limited to analyzing debian images (and derivatives). 
