@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chainguard.dev/fagin/internal/cmd"
+	"chainguard.dev/imgfiles/internal/cmd"
 	"github.com/sirupsen/logrus"
 )
 

@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"chainguard.dev/fagin/pkg/distro"
-	"chainguard.dev/fagin/pkg/oci"
+	"chainguard.dev/imgfiles/pkg/distro"
+	"chainguard.dev/imgfiles/pkg/oci"
 )
 
 func New() *Unpack {

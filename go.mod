@@ -1,4 +1,4 @@
-module chainguard.dev/fagin
+module chainguard.dev/imgfiles
 
 go 1.19
 
