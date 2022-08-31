@@ -39,8 +39,8 @@ func (u *Unpack) ImageStats(imageRef string) (stats ImageStats, err error) {
 	}
 	defer os.Remove(tmpFile)
 
-	filesInPackages := []string{}
-	filesInImage := []string{}
+	var filesInPackages []string
+	var filesInImage []string
 
 	switch u.Options.Distro {
 	case "debian":
