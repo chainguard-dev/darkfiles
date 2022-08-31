@@ -9,6 +9,7 @@ import (
 
 type commandLineOptions struct {
 	logLevel string
+	distro   string
 }
 
 var commandLineOpts = &commandLineOptions{}
@@ -25,6 +26,13 @@ func Execute() error {
 		"log-level",
 		"info",
 		fmt.Sprintf("the logging verbosity, either %s", log.LevelNames()),
+	)
+
+	rootCmd.PersistentFlags().StringVar(
+		&commandLineOpts.distro,
+		"distro",
+		"",
+		fmt.Sprintf("distro format of the scanned image (alpine | debian)"),
 	)
 
 	addStats(rootCmd)

@@ -36,6 +36,7 @@ By default list will output all non-tracked files.
 				return errors.New("no image reference specified")
 			}
 			u := unpack.New()
+			u.Options.Distro = commandLineOpts.distro
 			if err := u.List(args[0], listOpts.set); err != nil {
 				return err
 			}

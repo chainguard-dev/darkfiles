@@ -11,10 +11,17 @@ import (
 )
 
 func New() *Unpack {
-	return &Unpack{}
+	return &Unpack{
+		Options: Options{},
+	}
+}
+
+type Options struct {
+	Distro string
 }
 
 type Unpack struct {
+	Options Options
 }
 
 type ImageStats struct {
@@ -32,7 +39,18 @@ func (u *Unpack) ImageStats(imageRef string) (stats ImageStats, err error) {
 	}
 	defer os.Remove(tmpFile)
 
-	filesInPackages, filesInImage, err := distro.ScanImageArchive(tmpFile)
+	filesInPackages := []string{}
+	filesInImage := []string{}
+
+	switch u.Options.Distro {
+	case "debian":
+		filesInPackages, filesInImage, err = distro.ScanDebian(tmpFile)
+	case "alpine":
+		filesInPackages, filesInImage, err = distro.ScanAlpine(tmpFile)
+	default:
+		return stats, errors.New("unkown distribution")
+	}
+
 	if err != nil {
 		return stats, fmt.Errorf("scanning image: %w", err)
 	}
@@ -68,7 +86,7 @@ func (u *Unpack) List(imageRef, set string) error {
 	}
 	defer os.Remove(tmpFile)
 
-	filesInPackages, filesInImage, err := distro.ScanImageArchive(tmpFile)
+	filesInPackages, filesInImage, err := distro.ScanImageArchive(tmpFile, u.Options.Distro)
 	if err != nil {
 		return fmt.Errorf("scanning image: %w", err)
 	}

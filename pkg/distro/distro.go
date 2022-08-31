@@ -19,13 +19,15 @@ const (
 
 type fsEventHandler func(*tar.Header, *tar.Reader) error
 
-func ScanImageArchive(archivePath string) (filesInPackages, filesInImage []string, err error) {
-	// filesInPackages, filesInImage, err = ScanDebian(archivePath)
-	filesInPackages, filesInImage, err = ScanAlpine(archivePath)
-	if err != nil {
-		return nil, nil, fmt.Errorf("scanning debian archive: %w", err)
+func ScanImageArchive(archivePath, format string) (filesInPackages, filesInImage []string, err error) {
+	switch format {
+	case "debian":
+		return ScanDebian(archivePath)
+	case "alpine":
+		return ScanAlpine(archivePath)
+	default:
+		return nil, nil, fmt.Errorf("unkown distribution (use debian or alpine)")
 	}
-	return filesInPackages, filesInImage, nil
 }
 
 func ScanAlpine(archivePath string) (filesInPackages, filesInImage []string, err error) {

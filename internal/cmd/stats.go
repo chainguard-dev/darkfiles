@@ -29,6 +29,7 @@ about files tracked (and not tracked) in a container image.
 				return errors.New("no image reference specified")
 			}
 			u := unpack.New()
+			u.Options.Distro = commandLineOpts.distro
 			if err := u.PrintStats(args[0]); err != nil {
 				return err
 			}
