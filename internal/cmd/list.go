@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 
-	"chainguard.dev/imgfiles/pkg/unpack"
+	"chainguard.dev/darkfiles/pkg/unpack"
 	"github.com/spf13/cobra"
 )
 

@@ -1,4 +1,4 @@
-module chainguard.dev/imgfiles
+module chainguard.dev/darkfiles
 
 go 1.19
 
