@@ -12,19 +12,27 @@ not tracker or installed by the OS package manager.
 
 ## Usage 
 
-Just run `fagin stats imageref` to get some statistics about files not installed via the os package 
-manager:
+Just run `fagin stats imageref` to get some statistics about files not installed via the
+os package manager. Here is an example scanning both the 
+[official](https://github.com/docker-library/golang) and 
+[distroless golang](https://github.com/distroless/go) images: 
 
 ```
-go run ./main.go stats golang
-INFO[0000] flattening image index.docker.io/library/golang 
-INFO[0021] flattenned image to /tmp/image-dump-2645404725.tar (962 MB) 
+fagin stats --distro=debian golang:latest
+INFO flattening image index.docker.io/library/golang 
+INFO flattened image to /tmp/image-dump-582865974.tar (962 MB) 
+Total files in image:       21033
+Files in packages:          8807
+Files not in packages:      12226
+Tracked by package manager: 41.872295%
 
-Total files in image:       24906
-Files in packages:          12881
-Files not in packages:      12025
-Tracked by package manager: 51.718460%
-
+fagin stats --distro=alpine distroless.dev/go
+INFO flattening image distroless.dev/go           
+INFO flattened image to /tmp/image-dump-7982759.tar (540 MB) 
+Total files in image:       5734
+Files in packages:          5734
+Files not in packages:      0
+Tracked by package manager: 100.000000%
 ```
 
 There is also `fagin list --set=all imageref` which can give you all files in 
@@ -32,7 +40,7 @@ an image (`--set=all`), files tracked by the package manager (`--set=tracked`)
 and all files found in the image which were add via other means (`--set=untracked`):
 
 ```
-go run ./main.go list --set=untracked golang
+go run ./main.go list --distro=debian --set=untracked golang
 INFO[0000] flattening image index.docker.io/library/golang 
 INFO[0021] flattenned image to /tmp/image-dump-2645404725.tar (962 MB) 
 
@@ -64,6 +72,19 @@ INFO[0021] flattenned image to /tmp/image-dump-2645404725.tar (962 MB)
 
 ## TODO
 
-### apk support
+### Automatic distro detection
 
-Right now, fagin is limited to analyzing debian images (and derivatives). 
+Right now, specifying --distro is mandatory
+
+### Filter disable flag
+
+There should be a flag to disable file filtering to get absolutely all files
+
+### Expand stats output with:
+
+* Number of files before and after filtering
+* Image size
+
+### Enable `--format=json` in stats subcommand
+
+### ~apk support~
