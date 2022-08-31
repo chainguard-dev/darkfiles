@@ -6,35 +6,92 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 const (
 	dpkgLib = "var/lib/dpkg"
 	dbDir   = dpkgLib + "/info/" // + util-linux.list
+
+	apkdbPath = "/lib/apk/db/installed"
 )
 
+type fsEventHandler func(*tar.Header, *tar.Reader) error
+
 func ScanImageArchive(archivePath string) (filesInPackages, filesInImage []string, err error) {
-	filesInPackages, filesInImage, err = ScanDebian(archivePath)
+	// filesInPackages, filesInImage, err = ScanDebian(archivePath)
+	filesInPackages, filesInImage, err = ScanAlpine(archivePath)
 	if err != nil {
 		return nil, nil, fmt.Errorf("scanning debian archive: %w", err)
 	}
 	return filesInPackages, filesInImage, nil
 }
 
-/*
-	func ScanAlpine(archivePath string) (filesInPackages, filesInImage []string, err error) {
-		filesInImage = []string{}
-		filesInPackages = []string{}
-		tarFile, err := os.Open(archivePath)
-		if err != nil {
-			return nil, nil, fmt.Errorf("opening tar file: %w", err)
+func ScanAlpine(archivePath string) (filesInPackages, filesInImage []string, err error) {
+	filesInPackages = []string{}
+
+	apkdbCopyFile, err := os.CreateTemp("", "apkdb-")
+	if err != nil {
+		return nil, nil, fmt.Errorf("opening temporary file for apkdb: %w", err)
+	}
+
+	defer func() {
+		apkdbCopyFile.Close()
+		os.Remove(apkdbCopyFile.Name())
+	}()
+
+	fsHandler := func(header *tar.Header, tr *tar.Reader) error {
+		if "/"+header.Name == apkdbPath {
+			if _, err := io.Copy(apkdbCopyFile, tr); err != nil {
+				return fmt.Errorf("writing to files list: %w", err)
+			}
+		}
+		return nil
+	}
+
+	others := map[string]struct{}{}
+	otherHandler := func(header *tar.Header, tr *tar.Reader) error {
+		others["/"+header.Name] = struct{}{}
+		return nil
+	}
+
+	filesInImage, err = readTarFiles(archivePath, fsHandler, otherHandler)
+	if err != nil {
+		return nil, nil, fmt.Errorf("reading tar files: %w", err)
+	}
+
+	// Parse the apk db
+	if _, err := apkdbCopyFile.Seek(0, 0); err != nil {
+		return nil, nil, fmt.Errorf("rewinding apkdb: %w", err)
+	}
+
+	scanner := bufio.NewScanner(apkdbCopyFile)
+	dupecheck := map[string]struct{}{}
+	inDir := ""
+	for scanner.Scan() {
+		if strings.HasPrefix(scanner.Text(), "F:") {
+			inDir = "/" + strings.TrimPrefix(scanner.Text(), "F:")
+			continue
 		}
 
-		tr := tar.NewReader(tarFile)
+		if inDir == "" || !strings.HasPrefix(scanner.Text(), "R:") {
+			continue
+		}
 
+		line := filepath.Join(inDir, strings.TrimPrefix(scanner.Text(), "R:"))
+		if _, ok := others[line]; ok {
+			continue
+		}
+		if _, ok := dupecheck[line]; ok {
+			continue
+		}
+		filesInPackages = append(filesInPackages, line)
+		dupecheck[line] = struct{}{}
+	}
+
+	return filesInPackages, filesInImage, err
 }
-*/
 
 // readTarFiles returns a list of all file entries in the tarball
 // it support receiving two functions that act as handlers for
@@ -83,8 +140,6 @@ LOOP:
 	return files, nil
 }
 
-type fsEventHandler func(*tar.Header, *tar.Reader) error
-
 // ScanDebian reads all files in a debian based image, appending the
 // package index data to a file
 func ScanDebian(archivePath string) (filesInPackages, filesInImage []string, err error) {
@@ -94,8 +149,6 @@ func ScanDebian(archivePath string) (filesInPackages, filesInImage []string, err
 	}
 	defer f.Close()
 	defer os.Remove(f.Name())
-
-	others := map[string]struct{}{}
 
 	// Define the handlers to be called when the file and other
 	// nodes are found
@@ -108,6 +161,7 @@ func ScanDebian(archivePath string) (filesInPackages, filesInImage []string, err
 		return nil
 	}
 
+	others := map[string]struct{}{}
 	otherHandler := func(header *tar.Header, tr *tar.Reader) error {
 		others["/"+header.Name] = struct{}{}
 		return nil
