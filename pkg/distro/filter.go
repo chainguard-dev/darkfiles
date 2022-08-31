@@ -39,6 +39,9 @@ var baseLinuxFiles = []string{
 	"/usr/sbin/policy-rc.d",
 	// Deb db states
 	"/var/lib/apt/extended_states",
+
+	"/dev/pts", // Shared memory mount
+	"/dev/pts", // terms
 }
 
 // ignoreDirectories is a list of directories to ignore which shift
@@ -56,8 +59,13 @@ var ignoreDirectories = []string{
 	"/var/lib/systemd/deb-systemd-user-helper-enabled",
 	"/" + dpkgLib, // apt  system data
 
-	"/usr/share/man/", // man pages
-	"/usr/share/doc/", // documentation
+	"/usr/share/man/",    // man pages
+	"/usr/share/doc/",    // documentation
+	"/usr/share/info/",   // info pages
+	"/usr/share/locale/", // localization files
+
+	// Alpine exceptions
+	"/lib/apk/db/", // apkdb files mutated by the package manager
 }
 
 func FilterPaths(fileList []string) (newFileList []string) {
