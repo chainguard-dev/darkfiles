@@ -30,7 +30,7 @@ func FlattenImageToTmp(reference string) (string, error) {
 		os.Remove(tmp.Name())
 		return "", fmt.Errorf("inspecting tmp file")
 	}
-	logrus.Infof("flattenned image to %s (%d MB)", tmp.Name(), info.Size()/1024/1024)
+	logrus.Infof("flattened image to %s (%d MB)", tmp.Name(), info.Size()/1024/1024)
 	return tmp.Name(), nil
 }
 
