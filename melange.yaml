@@ -1,0 +1,28 @@
+package:
+  name: darkfiles
+  version: "{{ .Version }}"
+  description: Measure container image dark matter
+  target-architecture:
+    - all
+  copyright:
+    - license: Apache-2.0
+      paths:
+        - "*"
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+    packages:
+      - alpine-baselayout-data
+      - ca-certificates-bundle
+      - busybox
+      - go
+
+pipeline:
+  - name: Build darkfiles from source
+    runs: |
+      set -x
+      CGO_ENABLED=0 go build -v \
+        -o "${{targets.destdir}}/usr/bin/darkfiles" .
