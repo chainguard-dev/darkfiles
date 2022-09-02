@@ -1,0 +1,51 @@
+name: melange-build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  melange-build:
+    name: melange-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Prepare variables for later steps
+        id: prepare
+        run: |
+          set -x
+          VERSION="$(git rev-parse --short HEAD)"
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo ::set-output name=version::${VERSION}
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v1.2.0
+
+      - name: Build apks with melange
+        uses: chainguard-dev/actions/melange-build@main
+        with:
+          sign-with-temporary-key: true
+          config: melange.yaml
+          archs: x86_64
+          template: "{\"Version\": \"${{ steps.prepare.outputs.version }}\"}"
+
+      - name: Insepct built apks
+        run: |
+          set -x
+          tree packages/
+
+      - name: Publish apks (on release only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          set -x
+          echo "TODO: release apks"
