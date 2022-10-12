@@ -121,7 +121,7 @@ func (u *Unpack) List(imageRef, set string) error {
 			}
 		}
 	default:
-		return errors.New("nnknown set of files")
+		return errors.New("Unknown set of files")
 	}
 	return nil
 }
