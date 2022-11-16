@@ -3,19 +3,19 @@
 <img src="https://user-images.githubusercontent.com/3935899/187793479-eb09b826-2e8a-486d-a9d5-fbdfdfa80691.png" />
 
 Container images are often assembled by copying files straight
-to their layers. Examples include copying applications from
-build images, copying entrypoint scripts, etc These files are
-not tracked by the underlying OS package managers like apt or apk
-which makes them invisible to security scanners as they are
+to their layers: examples include (but are not limited to) copying applications from
+build images or copying entrypoint scripts. These files are
+not tracked by the underlying operating system (OS) package managers like apt or apk,
+which makes them invisible to security scanners since they are
 not reflected in the package database.
 
-To gain some insight into this dark matter, `darkfiles` inspects
+To gain insight into this "dark matter," `darkfiles` inspects
 container images to detect files not tracked by the OS package manager.
 
 ## Usage 
 
 Just run `darkfiles stats imageref` to get some statistics about
-files not installed via the os package manager. Here is an example
+files not installed via the OS package manager. Here is an example
 scanning both the 
 [official](https://github.com/docker-library/golang) and 
 [distroless golang](https://github.com/distroless/go) images: 
@@ -38,8 +38,7 @@ Files not in packages:      0
 Tracked by package manager: 100.000000%
 ```
 
-There is also `darkfiles list --set=all imageref` which can give
-you all files included in an image (`--set=all`), files tracked
+There is also `darkfiles list --set=all imageref` which returns all files included in an image (`--set=all`), files tracked
 by the package manager (`--set=tracked`) and all files found in
 the image which were added through other means (`--set=untracked`):
 
