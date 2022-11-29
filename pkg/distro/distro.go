@@ -25,14 +25,25 @@ const (
 type fsEventHandler func(*tar.Header, *tar.Reader) error
 
 func ScanImageArchive(archivePath, format string) (filesInPackages, filesInImage []string, err error) {
-	switch format {
+	/*switch format {
 	case "debian":
 		return ScanDebian(archivePath)
 	case "alpine":
 		return ScanAlpine(archivePath)
 	default:
 		return nil, nil, fmt.Errorf("unkown distribution (use debian or alpine)")
+	}*/
+	filesInPackages, filesInImage, err = ScanDebian(archivePath)
+	if err != nil || len(filesInPackages) != 0 {
+		return filesInPackages, filesInImage, err
 	}
+
+	filesInPackages, filesInImage, err = ScanAlpine(archivePath)
+	if err != nil || len(filesInPackages) != 0 {
+		return filesInPackages, filesInImage, err
+	}
+
+	return nil, nil, fmt.Errorf("Cannot find valid package manager (debian or alpine)")
 }
 
 func ScanAlpine(archivePath string) (filesInPackages, filesInImage []string, err error) {
