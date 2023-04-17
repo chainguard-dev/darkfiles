@@ -47,14 +47,15 @@ func (u *Unpack) ImageStats(imageRef string) (stats ImageStats, err error) {
 	var filesInPackages []string
 	var filesInImage []string
 
-	switch u.Options.Distro {
+	/*switch u.Options.Distro {
 	case "debian":
 		filesInPackages, filesInImage, err = distro.ScanDebian(tmpFile)
 	case "alpine":
 		filesInPackages, filesInImage, err = distro.ScanAlpine(tmpFile)
 	default:
 		return stats, errors.New("unkown distribution")
-	}
+	}*/
+	filesInPackages, filesInImage, err = distro.ScanImageArchive(tmpFile, "")
 
 	if err != nil {
 		return stats, fmt.Errorf("scanning image: %w", err)
